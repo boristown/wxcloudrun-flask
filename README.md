@@ -110,6 +110,67 @@ curl https://<云托管服务域名>/api/count
 curl -X POST -H 'content-type: application/json' -d '{"action": "inc"}' https://<云托管服务域名>/api/count
 ```
 
+
+### `POST /api/sandbox`
+
+在安全的沙箱环境中执行Python代码，返回执行结果和输出
+
+#### 请求参数
+
+- `code`：`string` 类型，必填
+  - 要在沙箱中执行的Python代码
+- `timeout`：`integer` 类型，可选
+  - 执行超时时间（秒），默认值为5秒
+
+##### 请求参数示例
+
+```
+{
+  "code": "print(\"Hello, World!\")\nprint(\"1 + 2 = ", 1 + 2)",
+  "timeout": 3
+}
+```
+
+#### 响应结果
+
+- `code`：错误码
+- `data`：执行结果对象，包含以下字段：
+  - `output`：`string` 类型，代码执行的标准输出
+  - `error`：`string` 类型，错误信息（如果有）
+  - `success`：`boolean` 类型，执行是否成功
+
+##### 响应结果示例
+
+```json
+{
+  "code": 0,
+  "data": {
+    "output": "Hello, World!\n1 + 2 = 3\n",
+    "error": "",
+    "success": true
+  }
+}
+```
+
+##### 错误响应示例
+
+```json
+{
+  "code": 0,
+  "data": {
+    "output": "",
+    "error": "name 'undefined_variable' is not defined",
+    "success": false
+  }
+}
+```
+
+#### 调用示例
+
+```
+curl -X POST -H 'content-type: application/json' -d '{"code": "print(\"Hello, World!\")"}' https://<云托管服务域名>/api/sandbox
+```
+
 ## 使用注意
 如果不是通过微信云托管控制台部署模板代码，而是自行复制/下载模板代码后，手动新建一个服务并部署，需要在「服务设置」中补全以下环境变量，才可正常使用，否则会引发无法连接数据库，进而导致部署失败。
 - MYSQL_ADDRESS
